@@ -72,10 +72,16 @@ def parse_observation(product_id: int, sku: str, data: dict) -> PriceObservation
         print(f"  [ERROR] Failed to parse {sku}: {e}")
         return None
 
-
+# Scraping items via SKU, wihch are either EA based (per item and price is exact) or KG based (per weight and price is ~about)
 def scrape_all(products: list[dict]) -> list[PriceObservation]:
     """
-    products = [{"product_id": 1, "sku": "20963512_EA"}]
+    products = [
+        {"product_id": 1, "sku": "20963512_EA"},   
+        {"product_id": 2, "sku": "20175355001_KG"},
+        {"product_id": 3, "sku": "20305674_EA"},
+        {"product_id": 4, "sku": "20812144001_EA"},
+        {"product_id": 5, "sku": "20325029_EA"}
+    ]
     """
     results = []
     for product in products:
@@ -93,7 +99,11 @@ def scrape_all(products: list[dict]) -> list[PriceObservation]:
 
 if __name__ == "__main__":
     test_products = [
-        {"product_id": 1, "sku": "20963512_EA"},  # 2% Milk 2L
+        {"product_id": 1, "sku": "20963512_EA"},
+        {"product_id": 2, "sku": "20175355001_KG"},
+        {"product_id": 3, "sku": "20305674_EA"},
+        {"product_id": 4, "sku": "20812144001_EA"},
+        {"product_id": 5, "sku": "20325029_EA"}# 2% Milk 2L
     ]
 
     results = scrape_all(test_products)
