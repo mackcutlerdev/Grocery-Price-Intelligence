@@ -1,6 +1,6 @@
 # BC Grocery Price Intelligence
 
-A data pipeline that scrapes weekly grocery prices from major BC retail banners, normalizes them for honest comparison, and surfaces pricing trends through interactive dashboards. Designed as a sibling project to [GroceryGenie](#) — the price intelligence layer that powers smart shopping list decisions.
+A data pipeline that scrapes weekly grocery prices from major BC retail banners, normalizes them for honest comparison, and surfaces pricing trends through interactive dashboards. Designed as a sibling project to [GroceryGenie](#), the price intelligence layer that powers smart shopping list decisions.
 
 > **Status:** v1 in development. Targeting BC banners only.
 
@@ -110,7 +110,7 @@ The retail banners being tracked. Stored at the *banner* level, not parent compa
 | `province` | text | "BC" for v1 |
 
 ### `products`
-The canonical product list — your hand-curated basket of ~50 staples.
+The canonical product list: your hand-curated basket of ~50 staples.
 
 | Column | Type | Notes |
 |---|---|---|
@@ -121,7 +121,7 @@ The canonical product list — your hand-curated basket of ~50 staples.
 | `size_unit` | text | "L" |
 
 ### `product_aliases`
-The mapping table — *the part that will eat the most of your time*. Each canonical product needs to be mapped, by hand, to whatever each banner calls it.
+The mapping table: *the part that will eat the most of your time*. Each canonical product needs to be mapped, by hand, to whatever each banner calls it.
 
 | Column | Type | Notes |
 |---|---|---|
@@ -231,7 +231,7 @@ python -m src.cli scrape --banner=save_on_foods --dry-run
 
 Don't try to build this top-down. Build it in slices, getting end-to-end working as fast as possible, then deepening.
 
-### Week 1 — vertical slice (one banner, one product)
+### Week 1: vertical slice (one banner, one product)
 - [ ] Set up repo, venv, Supabase project, schema applied
 - [ ] Hand-define a 5-item basket (just 5 to start — milk, bread, eggs, bananas, butter)
 - [ ] Manually map those 5 items to one banner (Save-On-Foods is the easiest to scrape)
@@ -241,76 +241,26 @@ Don't try to build this top-down. Build it in slices, getting end-to-end working
 
 **Goal: end-to-end working with trivial scope.** Don't expand until this works.
 
-### Week 2 — expand horizontally
+### Week 2: expand horizontally
 - [ ] Expand basket to 50 items
 - [ ] Add Superstore scraper (this will be harder than Save-On's)
 - [ ] Add Walmart Canada scraper
-- [ ] Build the alias-mapping spreadsheet — this is grunt work, budget 3-4 hours
+- [ ] Build the alias-mapping spreadsheet, this is grunt work, budget 3-4 hours
 - [ ] Implement unit normalization (`normalize/units.py`)
 
-### Week 3 — analysis + dashboard
+### Week 3: analysis + dashboard
 - [ ] Notebooks for basket index, category inflation, price spread
 - [ ] Build Power BI dashboard with 4-5 views (see [The dashboard](#the-dashboard))
 - [ ] Mirror the headline view to Tableau Public
 - [ ] Write up findings paragraph for the README
 
-### Week 4 — automation + ML + polish
+### Week 4: automation + ML + polish
 - [ ] GitHub Actions weekly cron
 - [ ] Prophet forecast on the basket index
 - [ ] Add forecast view to dashboard
 - [ ] README polish, screenshot the dashboard, record a 60-second Loom
 
 **Realistic total: 20-30 focused hours.** The scrapers will eat more time than you expect; the dashboard will eat less.
-
----
-
-## The dashboard
-
-Five views, in order of importance:
-
-1. **Banner Basket Index Over Time** — line chart, x=week, y=$ for the full basket. Three lines, one per banner. The headline.
-2. **Category Inflation** — bar chart, % change in average price by category over the tracked period. Where is inflation actually happening?
-3. **Cross-Banner Price Spread** — for each product, the gap between cheapest and most expensive banner. Surfaces the "you're overpaying for X at Y" stories.
-4. **Sale Behavior Heatmap** — banner × category, % of weeks something in that category was on sale. Shows promotional intensity.
-5. **Forecast** — basket index with Prophet's 4-week forecast and 80% confidence band. Last view; the "ML" beat.
-
-Make every view filterable by banner and category. Add a "last updated" timestamp prominently — recruiters notice fresh data.
-
----
-
-## Things that will go wrong
-
-These are not hypothetical. Plan for them.
-
-- **Scrapers will break.** Sites redesign, anti-bot measures get added, products get discontinued. Build each scraper to fail gracefully — log the error, skip, continue. Do not let one banner break the whole pipeline.
-- **Playwright can be flaky in CI.** If GitHub Actions runs are unreliable, switch the cron to a self-hosted runner on a $4/month VPS or just run it locally on a `cron` and commit results. The pipeline shipping weekly matters more than where it runs.
-- **Product mapping decays.** "Lucerne 2% Milk 2L" gets renamed, replaced, or moved to a different SKU. Add a sanity-check job that flags aliases returning nothing for 2+ weeks.
-- **Robots.txt and ToS.** Read each site's `robots.txt` and terms before you point your scraper at it. Most flyer/online-grocery pages are scrape-tolerant for low-volume personal use, but this is on you to verify. Use realistic delays (1-3s between requests). Don't hammer.
-- **Currency and tax.** Prices on Canadian grocery sites are pre-tax. Be consistent — store pre-tax everywhere, mention it in the dashboard.
-- **The 50-item basket bias.** Whatever you pick is your "basket inflation" definition, and it shapes every conclusion. Be transparent: list the basket in the README, explain how items were chosen.
-- **Supabase free tier limits.** 500MB storage, 50k monthly rows. With 50 products × 3 banners × weekly = 7,800 rows/year. You're fine for years, but know the ceiling.
-
----
-
-## Stretch goals
-
-Ranked by how much they'd improve the project vs. effort:
-
-1. **Loblaws PC Optimum data integration** — if you have an account, their app exposes personalized prices. Adds another data dimension. Easy if you have the account.
-2. **A simple Flask/FastAPI endpoint** that takes a shopping list and returns the cheapest banner for that specific basket. This is the GroceryGenie integration hook. ~half day of work.
-3. **Geographic expansion** — add a Vancouver Island banner (Country Grocer) or an Alberta banner. Shows the system scales.
-4. **Anomaly detection** — flag when a product's price changes >15% week-over-week. Newsworthy hooks for the dashboard.
-5. **Deal-hunter mode** — surface "best sale this week per category." Most consumer-facing feature.
-
-Don't do these in v1. Ship v1 first.
-
----
-
-## Resume framing
-
-The bullet for this project should emphasize three things: end-to-end pipeline, concrete insight, and the GroceryGenie connection.
-
-> **BC Grocery Price Intelligence** — Built a Python data pipeline scraping weekly prices from 3 BC grocery banners, storing normalized observations in Postgres and surfacing trends through a Power BI dashboard. Implemented Prophet-based 4-week forecasting on basket inflation; pipeline runs weekly via GitHub Actions. Designed as the price intelligence layer for GroceryGenie's shopping list feature.
 
 Then in interviews you can talk about:
 - The product-aliasing problem (mature engineering judgment — you knew the exact-matching tarpit and chose pragmatism)
