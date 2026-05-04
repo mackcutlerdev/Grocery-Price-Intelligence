@@ -2,6 +2,13 @@ from dataclasses import dataclass
 
 @dataclass
 class PriceObservation:
+    """
+    Represents a single snapshot of a product's pricing data
+    collected from a retailer or banner at a specific time
+
+    Each instance captures both normalized fields (like prices)
+    and the raw source payload (API/HTML) for traceability/debugging.
+    """
     product_id: int
     banner_id: int
     observed_at: str

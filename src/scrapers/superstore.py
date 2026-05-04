@@ -7,6 +7,7 @@ STORE_ID = "1556"
 BANNER_ID = 2
 BANNER = "superstore"
 
+# Headers modelled after request/reponse headers observing via DevTools Network API
 HEADERS = {
     "Accept": "application/json, text/plain, */*",
     "Accept-Language": "en",
@@ -21,6 +22,7 @@ HEADERS = {
     "x-loblaw-tenant-id": "ONLINE_GROCERIES",
 }
 
+# Function that fetches the product using it's sku via the relevant API call using headers mimicking browser reqs, and returns the json
 def fetch_product(sku: str) -> dict | None:
     date = datetime.now().strftime("%d%m%Y")
     url = (
@@ -33,16 +35,18 @@ def fetch_product(sku: str) -> dict | None:
         return None
     return response.json()
 
-
+# Function that parses the JSON for relevant price info and return it to PriceObservation
 def parse_observation(product_id: int, sku: str, data: dict) -> PriceObservation | None:
     try:
         offer = data["offers"][0]
 
+        # No sale and default assumption
         regular_price = offer["price"]["value"]
         was_price = offer.get("wasPrice")
         sale_price = None
         is_on_sale = False
 
+        # When there exists a `was_price`, it means there is a sale
         if was_price:
             sale_price = regular_price
             regular_price = was_price["value"]
@@ -72,7 +76,7 @@ def parse_observation(product_id: int, sku: str, data: dict) -> PriceObservation
         print(f"  [ERROR] Failed to parse {sku}: {e}")
         return None
 
-# Scraping items via SKU, wihch are either EA based (per item and price is exact) or KG based (per weight and price is ~about)
+# Scraping (fetch and process) items via SKU, wihch are either EA based (per item and price is exact) or KG based (per weight and price is ~about)
 def scrape_all(products: list[dict]) -> list[PriceObservation]:
     """
     products = [
@@ -99,14 +103,14 @@ def scrape_all(products: list[dict]) -> list[PriceObservation]:
 
 if __name__ == "__main__":
     test_products = [
-        {"product_id": 1, "sku": "20963512_EA"},
-        {"product_id": 2, "sku": "20175355001_KG"},
-        {"product_id": 3, "sku": "20305674_EA"},
-        {"product_id": 4, "sku": "20812144001_EA"},
-        {"product_id": 5, "sku": "20325029_EA"}# 2% Milk 2L
+        {"product_id": 1, "sku": "20963512_EA"},        # 2% Milk 2L
+        {"product_id": 2, "sku": "20175355001_KG"},     # Bananas
+        {"product_id": 3, "sku": "20305674_EA"},        # Bread
+        {"product_id": 4, "sku": "20812144001_EA"},     # Eggs
+        {"product_id": 5, "sku": "20325029_EA"}         # Butter
     ]
 
     results = scrape_all(test_products)
     print(f"\nScraped {len(results)} observations")
     insert_observations(results)
-    print("Done — check Supabase.")
+    print("Done! check Supabase.")
