@@ -8,7 +8,7 @@ async def main():
     # Start Playwright
     async with async_playwright() as p:
         # Launch Chromium browser cause faster usually
-        browser = await p.chromium.launch(headless=True)   # Visible window headless=(true || false)
+        browser = await p.chromium.launch(headless=False)   # Visible window headless=(true || false)
         
         # Create a new browser context with custom settings
         context = await browser.new_context(

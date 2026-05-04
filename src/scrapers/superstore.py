@@ -2,6 +2,7 @@ import asyncio
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from playwright.async_api import async_playwright, Page
+import sys, os
 
 STORE_ID = "1556"
 BANNER_ID = 2  # Real Canadian Superstore in our banners table
@@ -18,6 +19,7 @@ class PriceObservation:
     unit_type: str
     raw_payload: dict
 
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 
 async def scrape_product(page: Page, product_id: int, url: str) -> PriceObservation | None:
     """Scrape a single product page and return a PriceObservation."""
@@ -139,3 +141,8 @@ if __name__ == "__main__":
     print(f"\nScraped {len(results)} observations:")
     for r in results:
         print(r)
+        
+    # Write to database
+    from src.db.insert import insert_observations
+    insert_observations(results)
+    print("Done — check Supabase.")
