@@ -2,7 +2,7 @@ import os
 import json
 from sqlalchemy import create_engine, text
 from dotenv import load_dotenv
-from src.scrapers.superstore import PriceObservation
+from src.models import PriceObservation
 
 load_dotenv()
 
