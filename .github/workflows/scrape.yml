@@ -25,19 +25,6 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Debug supabase version
-        run: python -c "import supabase; print(supabase.__version__)"
-      
-      - name: Debug env
-        run: |
-          python -c "
-          import os
-          url = os.environ['SUPABASE_URL']
-          print('length:', len(url))
-          print('ends with:', repr(url[-5:]))
-          print('starts with:', url[:8])
-          "
-
       - name: Run Superstore scraper
         run: python -m src.scrapers.superstore
 
