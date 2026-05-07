@@ -28,14 +28,12 @@ jobs:
       - name: Debug supabase version
         run: python -c "import supabase; print(supabase.__version__)"
       
-      - name: Debug query
+      - name: Debug env
         run: |
           python -c "
           import os
-          from supabase import create_client
-          supabase = create_client(os.environ['SUPABASE_URL'], os.environ['SUPABASE_KEY'])
-          r = supabase.table('product_aliases').select('product_id, banner_sku').eq('banner_id', 2).execute()
-          print(r.data[:2])
+          url = os.environ['SUPABASE_URL']
+          print(repr(url))
           "
 
       - name: Run Superstore scraper
