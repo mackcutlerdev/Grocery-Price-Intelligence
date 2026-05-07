@@ -6,10 +6,15 @@ from src.models import PriceObservation
 
 load_dotenv()
 
+# DB connection initialized from env variable
 engine = create_engine(os.environ["DATABASE_URL"])
 
 
 def insert_observation(obs: PriceObservation) -> None:
+    """
+    Insert a single price observation into the database.
+    """
+    
     sql = text("""
         INSERT INTO price_observations (
             product_id, banner_id, observed_at,
@@ -22,6 +27,7 @@ def insert_observation(obs: PriceObservation) -> None:
         )
     """)
 
+    # Make sure the insert fully succeeds or fails together (no partial writes)
     with engine.begin() as conn:
         conn.execute(sql, {
             "product_id": obs.product_id,
@@ -38,5 +44,8 @@ def insert_observation(obs: PriceObservation) -> None:
 
 
 def insert_observations(observations: list[PriceObservation]) -> None:
+    """
+    Insert multiple price observations sequentially
+    """
     for obs in observations:
         insert_observation(obs)

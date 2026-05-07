@@ -102,15 +102,12 @@ def scrape_all(products: list[dict]) -> list[PriceObservation]:
 
 
 if __name__ == "__main__":
-    test_products = [
-        {"product_id": 1, "sku": "20963512_EA"},        # 2% Milk 2L
-        {"product_id": 2, "sku": "20175355001_KG"},     # Bananas
-        {"product_id": 3, "sku": "20305674_EA"},        # Bread
-        {"product_id": 4, "sku": "20812144001_EA"},     # Eggs
-        {"product_id": 5, "sku": "20325029_EA"}         # Butter
-    ]
+    from src.db.queries import get_products_for_banner
+    
+    products = get_products_for_banner(BANNER_ID)
+    print(f"Found {len(products)} products for Superstore")
 
-    results = scrape_all(test_products)
+    results = scrape_all(products)
     print(f"\nScraped {len(results)} observations")
     insert_observations(results)
-    print("Done! check Supabase.")
+    print("Done — check Supabase.")
