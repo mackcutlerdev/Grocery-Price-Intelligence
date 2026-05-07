@@ -110,4 +110,4 @@ if __name__ == "__main__":
     results = scrape_all(products)
     print(f"\nScraped {len(results)} observations")
     insert_observations(results)
-    print("Done — check Supabase.")
+    print("Done! Check Supabase.")
