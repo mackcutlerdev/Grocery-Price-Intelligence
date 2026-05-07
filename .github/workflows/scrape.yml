@@ -33,7 +33,9 @@ jobs:
           python -c "
           import os
           url = os.environ['SUPABASE_URL']
-          print(repr(url))
+          print('length:', len(url))
+          print('ends with:', repr(url[-5:]))
+          print('starts with:', url[:8])
           "
 
       - name: Run Superstore scraper
